@@ -1,0 +1,4 @@
+secrets.rb
+*.json
+tempCode
+picture*
