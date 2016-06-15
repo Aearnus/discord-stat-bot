@@ -1,0 +1,10 @@
+Hello! I'm a bot that tracks the statistics of this channel. I also do flood and spam protection. If you send 4 messages within 5 seconds, you will have XP taken and be given a warning. 3 warnings automatically kicks you. I expose the following commands (all preceeded by a !):
+`help`: Display this message.
+`words`: Display the top 10 most used words in this channel.
+`people`: Display the top 10 most active people in this channel.
+`xp`: Display your level and various information about it.
+`ruby`: Run a ruby program.
+`haskell`: Run a haskell program.
+`coin`: Flip a coin.
+`roll`: Say a list of numbers after it, and it will roll dice with those numbers as max rolls.
+`rpic`: Send an image from a subreddit you specify.
