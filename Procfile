@@ -1,1 +1,1 @@
-ruby discordStatBot.rb
+bot:ruby discordStatBot.rb
