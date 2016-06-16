@@ -210,6 +210,7 @@ $bot.message(start_with: "!rpic ") do |event|
 		File.open(fileName, "rb") do |file|
 			event.channel.send_file(file)
 		end
+		File.delete(fileName)
 	else
 		event.respond "Sorry! No images found."
 	end
