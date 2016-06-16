@@ -196,8 +196,8 @@ $bot.message(start_with: "!rpic ") do |event|
 		singleUrl = post["data"]["url"]
 		if singleUrl =~ /\/imgur.com/ #if they link to imgur instead of i.imgur.com, fix it
 			print "changing #{singleUrl} to "
-			imgurPage = Nokogiri::HTML(open(singleUrl))
-			singleUrl = imgurPage.css(".zoom img").attr("src")
+			imgurPage = Nokogiri::HTML(open(singleUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
+			singleUrl = imgurPage.css(".post-image img").attr("src")
 			puts "#{singleUrl}"
 		end
 		if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
