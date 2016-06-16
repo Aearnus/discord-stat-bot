@@ -193,7 +193,7 @@ $bot.message(start_with: "!rpic ") do |event|
 	imageUrls = []
 	subredditListing["data"]["children"].each do |post|
 		singleUrl = post["data"]["url"]
-		if singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/
+		if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
 			imageUrls.push(singleUrl)
 		end
 	end
