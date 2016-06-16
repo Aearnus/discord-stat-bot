@@ -14,6 +14,7 @@
 require "discordrb"
 require "json"
 require "open-uri"
+require "nokogiri"
 require_relative "coderunner.rb"
 #defines $MY_TEXT_CHANNEL, $DISCORD_SECRET, and $DISCORD_APP_ID
 require_relative "secrets.rb"
@@ -193,6 +194,12 @@ $bot.message(start_with: "!rpic ") do |event|
 	imageUrls = []
 	subredditListing["data"]["children"].each do |post|
 		singleUrl = post["data"]["url"]
+		if singleUrl =~ /\/imgur.com/ #if they link to imgur instead of i.imgur.com, fix it
+			print "changing #{singleUrl} to "
+			imgurPage = Nokogiri::HTML(open(singleUrl))
+			singleUrl = imgurPage.css(".zoom img").attr("src")
+			puts "#{singleUrl}"
+		end
 		if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
 			imageUrls.push(singleUrl)
 		end
@@ -214,6 +221,10 @@ $bot.message(start_with: "!rpic ") do |event|
 	else
 		event.respond "Sorry! No images found."
 	end
+end
+
+$bot.message(start_with: "!xkcd ") do |event|
+
 end
 
 $bot.run
