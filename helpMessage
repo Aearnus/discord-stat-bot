@@ -8,4 +8,4 @@ Hello! I'm a bot that tracks the statistics of this channel. I also do flood and
 `coin`: Flip a coin.
 `roll`: Say a list of numbers after it, and it will roll dice with those numbers as max rolls.
 `rpic`: Send an image from a subreddit you specify.
-`xkcd`: Send an XKCD of a number that you specify
+`xkcd`: Send an XKCD of a number that you specify. 0 is the most recent xkcd, no numbers gives you a random one.

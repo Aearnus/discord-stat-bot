@@ -196,35 +196,68 @@ $bot.message(start_with: "!rpic ") do |event|
 		singleUrl = post["data"]["url"]
 		if singleUrl =~ /\/imgur.com/ #if they link to imgur instead of i.imgur.com, fix it
 			print "changing #{singleUrl} to "
-			imgurPage = Nokogiri::HTML(open(singleUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
-			singleUrl = imgurPage.css(".post-image img").attr("src")
-			puts "#{singleUrl}"
+			begin
+				imgurPage = Nokogiri::HTML(open(singleUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
+				singleUrl = imgurPage.css(".post-image img").attr("src")
+				puts "#{singleUrl}"
+			rescue
+				puts "imgur url couldn't be routed"
+			end
 		end
 		if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
 			imageUrls.push(singleUrl)
 		end
 	end
 	if imageUrls.length > 0
-		cuteImageUrl = imageUrls.sample
-		puts "downloading #{cuteImageUrl}"
-		fileType = cuteImageUrl.split(".")[-1]
-		fileName = "cute.#{fileType}"
-		File.open(fileName, "wb") do |file|
-			#have to disable ssl verification because awwni.me's
-			#cert is fucking expired ofc
-			file.write open(cuteImageUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
+		begin
+			cuteImageUrl = imageUrls.sample
+			puts "downloading #{cuteImageUrl}"
+			fileType = cuteImageUrl.split(".")[-1]
+			fileName = "cute.#{fileType}"
+			File.open(fileName, "wb") do |file|
+				#have to disable ssl verification because awwni.me's
+				#cert is fucking expired ofc
+				file.write open(cuteImageUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
+			end
+			File.open(fileName, "rb") do |file|
+				event.channel.send_file(file)
+			end
+			File.delete(fileName)
+		rescue
+			puts "pic couldn't be downloaded"
 		end
-		File.open(fileName, "rb") do |file|
-			event.channel.send_file(file)
-		end
-		File.delete(fileName)
 	else
 		event.respond "Sorry! No images found."
 	end
 end
 
 $bot.message(start_with: "!xkcd ") do |event|
-
+	begin
+		xkcdNumber = event.content.split(" ")[-1].to_i
+		#if we want the latest xkcd
+		if xkcdNumber != 0
+			xkcdPage = Nokogiri::HTML(open("http://xkcd.com/#{xkcdNumber}/", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
+		else
+			xkcdPage = Nokogiri::HTML(open("http://xkcd.com/", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
+		end
+		xkcdComic = xkcdPage.css("#comic img")
+		xkcdImage = xkcdComic.attr("src").to_s
+		if !xkcdImage.start_with?("http:")
+			if xkcdImage.start_with?("//")
+				xkcdImage = "http:#{xkcdImage}"
+			end
+		end
+		File.open("xkcd.png", "wb") do |file|
+			file.write open(xkcdImage, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
+		end
+		File.open("xkcd.png", "rb") do |file|
+			event.channel.send_file(file)
+		end
+		File.delete("xkcd.png")
+		event.respond "Alt-text: #{xkcdComic.attr('title')}"
+	rescue
+		event.respond "XKCD not found."
+	end
 end
 
 $bot.run
