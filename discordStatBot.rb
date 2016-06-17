@@ -186,7 +186,7 @@ $bot.message(start_with: "!roll ") do |event|
 end
 
 $bot.message(start_with: "!rpic ") do |event|
-	BANNED_USERS = ["168919551562481665"]
+	BANNED_USERS = [168919551562481665]
 	#http://stackoverflow.com/questions/4581075/how-make-a-http-request-using-ruby-on-rails
 	#http://stackoverflow.com/questions/6768238/download-an-image-from-a-url
 	if !BANNED_USERS.include? event.author.id
