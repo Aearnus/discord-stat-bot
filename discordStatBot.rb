@@ -186,48 +186,51 @@ $bot.message(start_with: "!roll ") do |event|
 end
 
 $bot.message(start_with: "!rpic ") do |event|
+	BANNED_USERS = ["168919551562481665"]
 	#http://stackoverflow.com/questions/4581075/how-make-a-http-request-using-ruby-on-rails
 	#http://stackoverflow.com/questions/6768238/download-an-image-from-a-url
-	subreddit = event.content.split(" ")[-1]
-	response = open("http://www.reddit.com/r/#{subreddit}/hot.json?count=100", {"User-Agent" => "a discord bot that sends pics (by /u/crazym4n)"}).read
-	subredditListing = JSON.parse(response)
-	imageUrls = []
-	subredditListing["data"]["children"].each do |post|
-		singleUrl = post["data"]["url"]
-		if singleUrl =~ /\/imgur.com/ #if they link to imgur instead of i.imgur.com, fix it
-			print "changing #{singleUrl} to "
+	if !BANNED_USERS.include? event.author.id
+		subreddit = event.content.split(" ")[-1]
+		response = open("http://www.reddit.com/r/#{subreddit}/hot.json?count=100", {"User-Agent" => "a discord bot that sends pics (by /u/crazym4n)"}).read
+		subredditListing = JSON.parse(response)
+		imageUrls = []
+		subredditListing["data"]["children"].each do |post|
+			singleUrl = post["data"]["url"]
+			if singleUrl =~ /\/imgur.com/ #if they link to imgur instead of i.imgur.com, fix it
+				print "changing #{singleUrl} to "
+				begin
+					imgurPage = Nokogiri::HTML(open(singleUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
+					singleUrl = imgurPage.css(".post-image img").attr("src")
+					puts "#{singleUrl}"
+				rescue
+					puts "imgur url couldn't be routed"
+				end
+			end
+			if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
+				imageUrls.push(singleUrl)
+			end
+		end
+		if imageUrls.length > 0
 			begin
-				imgurPage = Nokogiri::HTML(open(singleUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}))
-				singleUrl = imgurPage.css(".post-image img").attr("src")
-				puts "#{singleUrl}"
+				cuteImageUrl = imageUrls.sample
+				puts "downloading #{cuteImageUrl}"
+				fileType = cuteImageUrl.split(".")[-1]
+				fileName = "cute.#{fileType}"
+				File.open(fileName, "wb") do |file|
+					#have to disable ssl verification because awwni.me's
+					#cert is fucking expired ofc
+					file.write open(cuteImageUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
+				end
+				File.open(fileName, "rb") do |file|
+					event.channel.send_file(file)
+				end
+				File.delete(fileName)
 			rescue
-				puts "imgur url couldn't be routed"
+				puts "pic couldn't be downloaded"
 			end
+		else
+			event.respond "Sorry! No images found."
 		end
-		if (singleUrl =~ /\.jpg|\.jpeg|\.bmp|\.png/) && post["data"]["over_18"] == false
-			imageUrls.push(singleUrl)
-		end
-	end
-	if imageUrls.length > 0
-		begin
-			cuteImageUrl = imageUrls.sample
-			puts "downloading #{cuteImageUrl}"
-			fileType = cuteImageUrl.split(".")[-1]
-			fileName = "cute.#{fileType}"
-			File.open(fileName, "wb") do |file|
-				#have to disable ssl verification because awwni.me's
-				#cert is fucking expired ofc
-				file.write open(cuteImageUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
-			end
-			File.open(fileName, "rb") do |file|
-				event.channel.send_file(file)
-			end
-			File.delete(fileName)
-		rescue
-			puts "pic couldn't be downloaded"
-		end
-	else
-		event.respond "Sorry! No images found."
 	end
 end
 
