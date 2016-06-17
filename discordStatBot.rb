@@ -81,7 +81,7 @@ $bot.message do |event|
 	#STATS FOR !PEOPLE
 	if !$stats["people"].key?("#{event.author.id}")
 		$stats["people"]["#{event.author.id}"] = {"timesSpoken" => 1, "nick" => event.author.display_name, "xp" => 0, "level" => 1}
-		event.respond "Welcome to the channel #{event.author.display_name}! You just reached **Level 1**. Type !xp to learn more."
+		#event.respond "Welcome to the channel #{event.author.display_name}! You just reached **Level 1**. Type !xp to learn more."
 	else
 		#update the nickname just in case they changed it
 		$stats["people"]["#{event.author.id}"]["nick"] = event.author.display_name
