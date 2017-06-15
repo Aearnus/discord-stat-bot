@@ -218,7 +218,7 @@ $bot.message(start_with: "!rpic ") do |event|
 				fileName = "cute.#{fileType}"
 				File.open(fileName, "wb") do |file|
 					#have to disable ssl verification because awwni.me's
-					#cert is fucking expired ofc
+					#cert is friggen expired ofc
 					file.write open(cuteImageUrl, {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE}).read
 				end
 				File.open(fileName, "rb") do |file|
