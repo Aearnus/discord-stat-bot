@@ -19,7 +19,7 @@ require_relative "coderunner.rb"
 #defines $MY_TEXT_CHANNEL, $DISCORD_SECRET, and $DISCORD_APP_ID
 require_relative "secrets.rb"
 
-$congratulations = ["Hell yeah", "Good job", "Congratulations", "Keep up the good work", "XD", "Time to kill yourself", "You're special", "What are you, freakin gay", "Hey, that's pretty good"]
+$congratulations = ["Heck yeah", "Good job", "Congratulations", "Keep up the good work", "XD", "You're special", "Hey, that's pretty good"]
 $bot = Discordrb::Bot.new token: $DISCORD_SECRET, application_id: $DISCORD_APP_ID
 if !File.exist?("discordStatBot.json")
 	File.open("discordStatBot.json", "w") { |file| file.write('{"words": {}, "people": {}}') }
